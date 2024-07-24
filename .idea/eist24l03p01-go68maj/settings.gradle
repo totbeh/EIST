@@ -1,0 +1,4 @@
+rootProject.name = 'L03PB01-Strangler-Pattern'
+include 'follow-microservice'
+include 'tweet-microservice'
+include 'login-microservice'

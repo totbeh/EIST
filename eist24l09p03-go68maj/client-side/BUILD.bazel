@@ -1,0 +1,7 @@
+# TODO: Add a java_binary target with the name 'client' to run the application
+
+# TODO: Add a java_library target with the name 'event-facade'
+
+# TODO: Add a java_library target with the name 'event-client'
+
+# TODO: Add a java_library target with the name 'token-generator-client'

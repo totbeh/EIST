@@ -1,0 +1,7 @@
+rootProject.name = 'L03P03-Exercise'
+include 'follow-microservice'
+include 'login-microservice'
+include 'tweet-microservice'
+include 'MessageBroker'
+include 'page-microservice'
+include 'activity-microservice'

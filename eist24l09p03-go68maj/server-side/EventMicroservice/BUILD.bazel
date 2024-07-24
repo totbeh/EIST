@@ -1,0 +1,3 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# TODO: Add a py_binary target with the name 'event_microservice'

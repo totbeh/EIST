@@ -1,0 +1,133 @@
+plugins {
+    id 'java'
+    id "com.google.protobuf" version "0.9.4"
+}
+
+sourceCompatibility = 17
+version = '1.0.0'
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+    test {
+        java {
+            srcDirs = []
+        }
+    }
+}
+
+// IMPORTANT: You probably want the non-SNAPSHOT version of gRPC. Make sure you
+// are looking at a tagged version of the example and not "master"!
+
+// Feel free to delete the comment at the next line. It is just for safely
+// updating the version in our release process.
+def grpcVersion = '1.59.0' // CURRENT_GRPC_VERSION
+def protobufVersion = '3.24.0'
+def protocVersion = protobufVersion
+
+dependencies {
+    // Dependencies are originally copied from: https://bitbucket.ase.in.tum.de/projects/EIST24L02P02/repos/eist24l02p02-tests/browse/build.gradle
+
+    // Frontend dependencies
+    implementation(platform("software.amazon.awssdk:bom:2.21.1"))
+    implementation 'software.amazon.awssdk:s3:2.21.15'
+    implementation 'software.amazon.awssdk:lambda:2.21.15'
+    implementation 'software.amazon.awssdk:http-client-spi:2.21.15'
+    implementation 'software.amazon.awssdk:apache-client:2.21.15'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
+    implementation 'com.konghq:unirest-java:3.14.1'
+
+    // Backend dependencies
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.2'
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.576'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.576'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.maven:maven-model:3.8.6'
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
+    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Other dependencies
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.17.0'
+    testImplementation 'net.bytebuddy:byte-buddy:1.12.10'
+
+
+    // gRPC dependencies
+    runtimeOnly 'io.grpc:grpc-netty-shaded:1.59.0'
+    implementation 'io.grpc:grpc-protobuf:1.59.0'
+    implementation 'io.grpc:grpc-stub:1.59.0'
+    implementation 'com.google.protobuf:protobuf-java-util:3.25.0'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
+    testImplementation 'io.grpc:grpc-testing:1.59.0'
+    testImplementation 'io.grpc:grpc-inprocess:1.59.0'
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-services:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+
+    // examples/advanced need this for JsonFormat
+    implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+
+    // Test dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2' // merge this version into all tasks so that we can deduplicate it here
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.7.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testImplementation 'io.grpc:grpc-testing:1.59.0'
+    testImplementation 'io.grpc:grpc-inprocess:1.59.0'
+    testImplementation 'org.json:json:2.15.1'
+    testImplementation 'org.easymock:easymock:5.3.0'
+    testImplementation 'com.squareup.okhttp3:okhttp:4.10.0-RC1'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0-RC1'
+    // Do not use a newer version of Mockito, since it breaks the Artemis test
+    // sandbox: "java.lang.IllegalStateException: Could not initialize plugin:
+    // interface org.mockito.plugins.MockMaker (alternate: null)"
+    testImplementation 'org.mockito:mockito-core:4.4.0'
+    testImplementation 'org.mockito:mockito-inline:4.4.0'
+    // This other version also seems to work
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.12.4'
+    // Just like this
+    testImplementation 'org.mockito:mockito-core:4.5.1'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
+    // Artemis dependencies (for testing)
+    testImplementation 'de.tum.in.ase:artemis-java-test-sandbox:1.13.0'
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
+    plugins {
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    }
+    generateProtoTasks {
+        all()*.plugins { grpc {} }
+    }
+}
+
+
+task buildZip(type: Zip) {
+    into('lib') {
+        from(jar)
+        from(configurations.runtimeClasspath)
+    }
+}

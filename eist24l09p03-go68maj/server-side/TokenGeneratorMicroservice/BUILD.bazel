@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# TODO: Add a py_binary target with the name 'token_generator_microservice'
+py_binary(
+    name = "token_generator_microservice",
+    srcs = ["token_generator_microservice.py"],
+    main = "token_generator_microservice.py",
+    deps = [
+        "//server-side:pip_deps_server",
+    ],
+)
